@@ -1,8 +1,23 @@
-/*
+/* Minimal layout for the search modal; full styling comes in task 05. */
+.search-insert-image-input {
+	width: 100%;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.search-insert-image-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: var(--size-4-2);
+	margin-top: var(--size-4-2);
+}
 
-If your plugin does not need CSS, delete this file.
+.search-insert-image-item {
+	height: 120px;
+	padding: 0;
+	overflow: hidden;
+}
 
-*/
+.search-insert-image-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
