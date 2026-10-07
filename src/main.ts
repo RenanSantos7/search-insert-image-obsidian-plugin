@@ -1,5 +1,6 @@
 import { MarkdownView, Notice, Plugin } from 'obsidian';
 import { openImageSearchModal, registerCommands } from './commands';
+import { t } from './i18n';
 import {
 	DEFAULT_SETTINGS,
 	SearchInsertImageSettings,
@@ -17,10 +18,10 @@ export default class SearchInsertImagePlugin extends Plugin {
 		registerCommands(this);
 		this.addSettingTab(new SearchInsertImageSettingTab(this.app, this));
 
-		this.addRibbonIcon(ICON, 'Buscar e inserir imagem', () => {
+		this.addRibbonIcon(ICON, t('ribbonTooltip'), () => {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (!view) {
-				new Notice('Abra uma nota Markdown para buscar imagens.');
+				new Notice(t('noticeOpenMarkdownFirst'));
 				return;
 			}
 			openImageSearchModal(this, view.editor, view);
@@ -31,7 +32,7 @@ export default class SearchInsertImagePlugin extends Plugin {
 				if (!(info instanceof MarkdownView)) return;
 				menu.addItem((item) =>
 					item
-						.setTitle('Buscar imagem…')
+						.setTitle(t('menuItemSearchImage'))
 						.setIcon(ICON)
 						.onClick(() => openImageSearchModal(this, editor, info)),
 				);

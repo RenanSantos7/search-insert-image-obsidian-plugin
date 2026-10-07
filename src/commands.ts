@@ -1,6 +1,7 @@
 import { Editor, MarkdownView } from 'obsidian';
 import type SearchInsertImagePlugin from './main';
 import { ImageSearchModal } from './modal';
+import { t } from './i18n';
 
 /** Opens the image search modal, using the editor selection as the initial query. */
 export function openImageSearchModal(
@@ -15,7 +16,7 @@ export function openImageSearchModal(
 export function registerCommands(plugin: SearchInsertImagePlugin): void {
 	plugin.addCommand({
 		id: 'open-image-search',
-		name: 'Buscar e inserir imagem',
+		name: t('commandOpenSearch'),
 		editorCallback: (editor, ctx) => {
 			if (ctx instanceof MarkdownView) {
 				openImageSearchModal(plugin, editor, ctx);

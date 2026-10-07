@@ -11,16 +11,20 @@ vi.mock('obsidian', () => {
 
 	class TFolder {}
 
+	const noticeElement = {
+		createEl: vi.fn(() => ({ addEventListener: vi.fn() })),
+	};
+
 	return {
 		Modal: class {},
 		Notice: class {
-			noticeEl = {
-				createEl: vi.fn(() => ({ addEventListener: vi.fn() })),
-			};
+			noticeEl = noticeElement;
+			messageEl = noticeElement;
 			hide = vi.fn();
 		},
 		PluginSettingTab,
 		TFolder,
+		getLanguage: vi.fn(() => 'en'),
 		normalizePath: (path: string) => path.replace(/\\/g, '/').replace(/\/+/g, '/'),
 		requestUrl: vi.fn(),
 		moment: () => ({ format: () => '20261007-085500' }),

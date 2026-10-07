@@ -16,6 +16,7 @@ import {
 	PROVIDER_LABELS,
 	SearchInsertImageSettings,
 } from './settings';
+import { t } from './i18n';
 
 /** Modal to search for images and insert the chosen one into the note. */
 export class ImageSearchModal extends Modal {
@@ -50,13 +51,13 @@ export class ImageSearchModal extends Modal {
 
 	onOpen(): void {
 		const { contentEl } = this;
-		this.titleEl.setText('Buscar imagem');
+		this.titleEl.setText(t('modalTitle'));
 
 		const searchBar = contentEl.createDiv({ cls: 'search-insert-image-search-bar' });
 		this.searchInput = searchBar.createEl('input', {
 			type: 'search',
 			cls: 'search-insert-image-input',
-			placeholder: 'Digite o termo e pressione Enter',
+			placeholder: t('searchPlaceholder'),
 			value: this.initialQuery,
 		});
 		this.searchInput.addEventListener('keydown', (evt) => {
@@ -82,7 +83,7 @@ export class ImageSearchModal extends Modal {
 		this.gridEl = contentEl.createDiv({ cls: 'search-insert-image-grid' });
 		this.loadMoreButton = contentEl.createEl('button', {
 			cls: 'search-insert-image-load-more',
-			text: 'Carregar mais',
+			text: t('buttonLoadMore'),
 		});
 		this.loadMoreButton.addEventListener('click', () => void this.loadMore());
 		this.loadMoreButton.hide();
@@ -132,18 +133,16 @@ export class ImageSearchModal extends Modal {
 		const provider = this.getProvider(providerId);
 		if (!provider) {
 			this.setStatus('');
-			new Notice(
-				'Para buscar no Google, preencha a chave de API e o ID do mecanismo de busca nas configurações do plugin.',
-			);
+			new Notice(t('noticeGoogleNotConfigured'));
 			return;
 		}
 
-		this.setStatus('Buscando imagens…');
+		this.setStatus(t('statusSearching'));
 		try {
 			const page = await provider.search(query, 1);
 			if (id !== this.searchId) return;
 			this.hasMore = page.hasMore;
-			this.setStatus(page.results.length ? '' : 'Nenhuma imagem encontrada.');
+			this.setStatus(page.results.length ? '' : t('statusNoResults'));
 			this.renderResults(page.results);
 			this.updateLoadMoreButton();
 		} catch (error) {
@@ -162,7 +161,7 @@ export class ImageSearchModal extends Modal {
 		if (!provider) return;
 
 		this.loadMoreButton?.setAttr('disabled', 'true');
-		this.setStatus('Buscando mais imagens…');
+		this.setStatus(t('statusLoadingMore'));
 		try {
 			const page = await provider.search(this.query, ++this.page);
 			if (id !== this.searchId) return;
@@ -191,7 +190,7 @@ export class ImageSearchModal extends Modal {
 
 			const thumbnail = item.createEl('button', {
 				cls: 'search-insert-image-thumbnail',
-				attr: { title: result.title, 'aria-label': result.title || 'Imagem' },
+				attr: { title: result.title, 'aria-label': result.title || t('ariaLabelImage') },
 			});
 			thumbnail.createEl('img', {
 				attr: { src: result.thumbnailUrl, alt: result.title, loading: 'lazy' },
@@ -203,10 +202,10 @@ export class ImageSearchModal extends Modal {
 
 			const actions = item.createDiv({ cls: 'search-insert-image-actions' });
 			actions
-				.createEl('button', { text: '🔗 Link', attr: { 'aria-label': 'Inserir como link' } })
+				.createEl('button', { text: t('buttonInsertLink'), attr: { 'aria-label': t('ariaLabelInsertLink') } })
 				.addEventListener('click', () => void this.insert(result, 'link', item));
 			actions
-				.createEl('button', { text: '⬇ Baixar', attr: { 'aria-label': 'Baixar e inserir' } })
+				.createEl('button', { text: t('buttonDownload'), attr: { 'aria-label': t('ariaLabelDownload') } })
 				.addEventListener('click', () => void this.insert(result, 'download', item));
 		}
 	}
@@ -226,8 +225,8 @@ export class ImageSearchModal extends Modal {
 		) {
 			return;
 		}
-		const retryButton = notice.noticeEl.createEl('button', {
-			text: 'Tentar com Google',
+		const retryButton = notice.messageEl.createEl('button', {
+			text: t('buttonRetryGoogle'),
 			cls: 'search-insert-image-notice-button',
 		});
 		retryButton.addEventListener('click', () => {
@@ -250,7 +249,7 @@ export class ImageSearchModal extends Modal {
 
 		this.isInserting = true;
 		item.addClass('is-loading');
-		this.setStatus('Baixando imagem…');
+		this.setStatus(t('statusDownloading'));
 		try {
 			const sourcePath = this.view.file?.path ?? '';
 			const inserted = await insertAsDownload(this.app, this.editor, sourcePath, result, {
@@ -279,18 +278,18 @@ function otherMode(mode: InsertMode): InsertMode {
 
 function modeHint(defaultMode: InsertMode): string {
 	return defaultMode === 'link'
-		? 'Clique na imagem para inserir como link. Shift+clique para baixar e inserir.'
-		: 'Clique na imagem para baixar e inserir. Shift+clique para inserir como link.';
+		? t('hintClickToLink')
+		: t('hintClickToDownload');
 }
 
 function searchErrorMessage(providerId: ImageProviderId, error: unknown): string {
 	if (error instanceof ProviderConfigError) {
-		return 'O Google recusou a chave de API ou o ID do mecanismo de busca. Verifique as configurações do plugin.';
+		return t('errorGoogleConfig');
 	}
 	if (error instanceof ProviderRateLimitError) {
 		return providerId === 'google'
-			? 'A cota da API do Google foi atingida (100 buscas grátis por dia). Tente novamente mais tarde.'
-			: 'DuckDuckGo limitou as requisições, tente novamente em alguns minutos.';
+			? t('errorGoogleRateLimit')
+			: t('errorDuckDuckGoRateLimit');
 	}
-	return `Não foi possível buscar imagens no ${PROVIDER_LABELS[providerId]}. Tente novamente mais tarde.`;
+	return t('errorProviderGeneric', { provider: PROVIDER_LABELS[providerId] });
 }

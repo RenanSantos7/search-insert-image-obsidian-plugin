@@ -1,6 +1,7 @@
 import { App, PluginSettingTab } from 'obsidian';
 import type { SettingDefinitionItem } from 'obsidian';
 import type SearchInsertImagePlugin from './main';
+import { t } from './i18n';
 
 export type ImageProviderId = 'duckduckgo' | 'google';
 export type InsertMode = 'link' | 'download';
@@ -24,7 +25,7 @@ export const DEFAULT_SETTINGS: SearchInsertImageSettings = {
 	defaultInsertMode: 'link',
 	downloadFolder: '',
 	safeSearch: true,
-	imageWidth: 0,
+	imageWidth: 700,
 };
 
 export const PROVIDER_LABELS: Record<ImageProviderId, string> = {
@@ -49,39 +50,39 @@ export class SearchInsertImageSettingTab extends PluginSettingTab {
 		return [
 			{
 				type: 'group',
-				heading: 'Busca e inserção',
+				heading: t('settingsHeadingSearchAndInsert'),
 				items: [
 					{
-						name: 'Buscador padrão',
-						desc: 'Buscador selecionado ao abrir a janela de busca. Ele também pode ser trocado na própria janela.',
+						name: t('settingDefaultProviderName'),
+						desc: t('settingDefaultProviderDesc'),
 						control: { type: 'dropdown', key: 'provider', options: PROVIDER_LABELS, defaultValue: settings.provider },
 					},
 					{
-						name: 'Modo de inserção padrão',
-						desc: 'Usado ao clicar na imagem. Shift+clique usa o outro modo.',
+						name: t('settingDefaultInsertModeName'),
+						desc: t('settingDefaultInsertModeDesc'),
 						control: {
 							type: 'dropdown',
 							key: 'defaultInsertMode',
 							options: {
-								link: 'Inserir como link',
-								download: 'Baixar e inserir como wikilink',
+								link: t('settingInsertModeLink'),
+								download: t('settingInsertModeDownload'),
 							},
 							defaultValue: settings.defaultInsertMode,
 						},
 					},
 					{
-						name: 'Pasta de download',
-						desc: 'Pasta do cofre onde as imagens baixadas são salvas. Deixe vazio para usar a pasta de anexos do Obsidian. A pasta é criada se não existir.',
+						name: t('settingDownloadFolderName'),
+						desc: t('settingDownloadFolderDesc'),
 						control: {
 							type: 'text',
 							key: 'downloadFolder',
-							placeholder: 'Pasta de anexos do Obsidian',
+							placeholder: t('settingDownloadFolderPlaceholder'),
 							defaultValue: settings.downloadFolder,
 						},
 					},
 					{
-						name: 'Largura da imagem',
-						desc: 'Largura em pixels adicionada à imagem inserida (ex.: |700). Deixe vazio ou 0 para não definir largura.',
+						name: t('settingImageWidthName'),
+						desc: t('settingImageWidthDesc'),
 						control: {
 							type: 'number',
 							key: 'imageWidth',
@@ -91,41 +92,41 @@ export class SearchInsertImageSettingTab extends PluginSettingTab {
 							validate: (value) =>
 								Number.isInteger(value) && value >= 0
 									? undefined
-									: 'Informe um número inteiro maior ou igual a zero.',
+									: t('settingImageWidthValidation'),
 						},
 					},
 					{
-						name: 'Busca segura',
-						desc: 'Filtra conteúdo explícito dos resultados.',
+						name: t('settingSafeSearchName'),
+						desc: t('settingSafeSearchDesc'),
 						control: { type: 'toggle', key: 'safeSearch', defaultValue: settings.safeSearch },
 					},
 				],
 			},
 			{
 				type: 'group',
-				heading: 'Busca no Google',
+				heading: t('settingsHeadingGoogle'),
 				items: [
 					{
-						name: 'Configuração',
-						desc: 'Para buscar no Google é preciso uma chave de API e o ID de um mecanismo de busca. O uso gratuito é limitado a 100 buscas por dia.',
+						name: t('settingGoogleConfigName'),
+						desc: t('settingGoogleConfigDesc'),
 					},
 					{
-						name: 'Chave de API',
-						desc: 'Crie a chave no console de desenvolvedor do Google e ative a API de pesquisa personalizada.',
+						name: t('settingGoogleApiKeyName'),
+						desc: t('settingGoogleApiKeyDesc'),
 						control: {
 							type: 'text',
 							key: 'googleApiKey',
-							placeholder: 'Chave de API do Google',
+							placeholder: t('settingGoogleApiKeyPlaceholder'),
 							defaultValue: settings.googleApiKey,
 						},
 					},
 					{
-						name: 'ID do mecanismo de busca',
-						desc: 'Crie um mecanismo de pesquisa programável do Google, com a busca de imagens ativada.',
+						name: t('settingGoogleCxName'),
+						desc: t('settingGoogleCxDesc'),
 						control: {
 							type: 'text',
 							key: 'googleCx',
-							placeholder: 'ID do mecanismo de busca',
+							placeholder: t('settingGoogleCxPlaceholder'),
 							defaultValue: settings.googleCx,
 						},
 					},

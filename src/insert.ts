@@ -1,5 +1,6 @@
 import { App, Editor, moment, normalizePath, Notice, requestUrl, TFile, TFolder } from 'obsidian';
 import type { ImageResult } from './providers/types';
+import { t } from './i18n';
 
 export interface DownloadOptions {
 	/** 0 = no width suffix. */
@@ -64,12 +65,12 @@ export async function insertAsDownload(
 		extension = getImageExtension(getHeader(response.headers, 'content-type'), result.imageUrl);
 	} catch (error) {
 		console.error('Search Insert Image: image download failed', error);
-		new Notice('Não foi possível baixar a imagem. Tente outra imagem ou insira como link.');
+		new Notice(t('noticeDownloadFailed'));
 		return false;
 	}
 
 	if (!extension) {
-		new Notice('O endereço escolhido não é uma imagem. Tente outra imagem.');
+		new Notice(t('noticeNotAnImage'));
 		return false;
 	}
 
@@ -80,7 +81,7 @@ export async function insertAsDownload(
 		file = await app.vault.createBinary(path, data);
 	} catch (error) {
 		console.error('Search Insert Image: saving the image failed', error);
-		new Notice('Não foi possível salvar a imagem no cofre.');
+		new Notice(t('noticeSaveFailed'));
 		return false;
 	}
 
