@@ -12,7 +12,12 @@ export interface ImageResult {
 }
 
 export interface ImageProvider {
-	search(query: string, page: number): Promise<ImageResult[]>;
+	search(query: string, page: number): Promise<ImageSearchPage>;
+}
+
+export interface ImageSearchPage {
+	results: ImageResult[];
+	hasMore: boolean;
 }
 
 /** The provider is temporarily blocking requests (rate limit). */
@@ -37,4 +42,14 @@ export class ProviderResponseError extends Error {
 		super(message);
 		this.name = 'ProviderResponseError';
 	}
+}
+
+const MIN_REQUEST_INTERVAL = 1000;
+let lastProviderRequestAt = 0;
+
+/** Keeps requests to unofficial and quota-limited providers at least one second apart. */
+export async function waitForProviderRequest(): Promise<void> {
+	const wait = MIN_REQUEST_INTERVAL - (Date.now() - lastProviderRequestAt);
+	if (wait > 0) await new Promise((resolve) => window.setTimeout(resolve, wait));
+	lastProviderRequestAt = Date.now();
 }

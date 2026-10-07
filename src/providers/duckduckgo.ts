@@ -4,6 +4,8 @@ import {
 	ImageResult,
 	ProviderRateLimitError,
 	ProviderResponseError,
+	ImageSearchPage,
+	waitForProviderRequest,
 } from './types';
 
 const BASE_URL = 'https://duckduckgo.com/';
@@ -41,7 +43,7 @@ export class DuckDuckGoProvider implements ImageProvider {
 
 	constructor(private readonly safeSearch: boolean) {}
 
-	async search(query: string, page: number): Promise<ImageResult[]> {
+	async search(query: string, page: number): Promise<ImageSearchPage> {
 		const state = await this.getQueryState(query);
 
 		let url: string;
@@ -56,7 +58,7 @@ export class DuckDuckGoProvider implements ImageProvider {
 			});
 			url = `${BASE_URL}i.js?${params.toString()}`;
 		} else {
-			if (!state.next) return [];
+			if (!state.next) return { results: [], hasMore: false };
 			url = this.buildNextUrl(state.next, state.vqd);
 		}
 
@@ -67,7 +69,10 @@ export class DuckDuckGoProvider implements ImageProvider {
 		}
 
 		state.next = data.next;
-		return data.results.flatMap((item) => this.toImageResult(item));
+		return {
+			results: data.results.flatMap((item) => this.toImageResult(item)),
+			hasMore: Boolean(state.next),
+		};
 	}
 
 	private async getQueryState(query: string): Promise<QueryState> {
@@ -88,6 +93,7 @@ export class DuckDuckGoProvider implements ImageProvider {
 	}
 
 	private async get(url: string): Promise<RequestUrlResponse> {
+		await waitForProviderRequest();
 		const response = await requestUrl({ url, method: 'GET', headers: HEADERS, throw: false });
 		if (RATE_LIMIT_STATUSES.has(response.status)) {
 			throw new ProviderRateLimitError(`DuckDuckGo responded with status ${response.status}`);

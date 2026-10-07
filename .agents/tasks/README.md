@@ -8,7 +8,7 @@ Derived from the "Steps" in `.agents/PLAN.md`. The plan is the source of truth f
 | 02 | [DuckDuckGo search + insert as link](02-duckduckgo-link.md) | 01 | done |
 | 03 | [Download + wikilink](03-download-wikilink.md) | 02 | done |
 | 04 | [Settings tab + Google Custom Search](04-settings-google.md) | 02 | done |
-| 05 | [Pagination, styles, errors, rate limiting, testing](05-polish.md) | 03, 04 | todo |
+| 05 | [Pagination, styles, errors, rate limiting, testing](05-polish.md) | 03, 04 | in progress |
 
 ## Conventions
 

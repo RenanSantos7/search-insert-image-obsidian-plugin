@@ -29,6 +29,11 @@ export class ImageSearchModal extends Modal {
 	/** Incremented on every search so stale responses are ignored. */
 	private searchId = 0;
 	private isInserting = false;
+	private page = 1;
+	private hasMore = false;
+	private query = '';
+	private seenImageUrls = new Set<string>();
+	private loadMoreButton: HTMLButtonElement | null = null;
 
 	constructor(
 		app: App,
@@ -75,6 +80,12 @@ export class ImageSearchModal extends Modal {
 		});
 		this.statusEl = contentEl.createDiv({ cls: 'search-insert-image-status' });
 		this.gridEl = contentEl.createDiv({ cls: 'search-insert-image-grid' });
+		this.loadMoreButton = contentEl.createEl('button', {
+			cls: 'search-insert-image-load-more',
+			text: 'Carregar mais',
+		});
+		this.loadMoreButton.addEventListener('click', () => void this.loadMore());
+		this.loadMoreButton.hide();
 
 		this.searchInput.focus();
 		if (this.initialQuery) void this.search();
@@ -86,6 +97,8 @@ export class ImageSearchModal extends Modal {
 		this.searchInput = null;
 		this.statusEl = null;
 		this.gridEl = null;
+		this.loadMoreButton = null;
+		this.seenImageUrls.clear();
 	}
 
 	private getProvider(id: ImageProviderId): ImageProvider | null {
@@ -110,6 +123,10 @@ export class ImageSearchModal extends Modal {
 
 		const id = ++this.searchId;
 		const providerId = this.providerId;
+		this.query = query;
+		this.page = 1;
+		this.hasMore = false;
+		this.seenImageUrls.clear();
 		this.gridEl?.empty();
 
 		const provider = this.getProvider(providerId);
@@ -123,15 +140,42 @@ export class ImageSearchModal extends Modal {
 
 		this.setStatus('Buscando imagens…');
 		try {
-			const results = await provider.search(query, 1);
+			const page = await provider.search(query, 1);
 			if (id !== this.searchId) return;
-			this.setStatus(results.length ? '' : 'Nenhuma imagem encontrada.');
-			this.renderResults(results);
+			this.hasMore = page.hasMore;
+			this.setStatus(page.results.length ? '' : 'Nenhuma imagem encontrada.');
+			this.renderResults(page.results);
+			this.updateLoadMoreButton();
 		} catch (error) {
 			if (id !== this.searchId) return;
 			console.error('Search Insert Image: search failed', error);
 			this.setStatus('');
-			new Notice(searchErrorMessage(providerId, error));
+			this.showSearchError(providerId, error);
+		}
+	}
+
+	private async loadMore(): Promise<void> {
+		if (!this.hasMore || !this.query || this.isInserting) return;
+		const id = this.searchId;
+		const providerId = this.providerId;
+		const provider = this.getProvider(providerId);
+		if (!provider) return;
+
+		this.loadMoreButton?.setAttr('disabled', 'true');
+		this.setStatus('Buscando mais imagens…');
+		try {
+			const page = await provider.search(this.query, ++this.page);
+			if (id !== this.searchId) return;
+			this.hasMore = page.hasMore;
+			this.renderResults(page.results);
+			this.setStatus('');
+			this.updateLoadMoreButton();
+		} catch (error) {
+			if (id !== this.searchId) return;
+			this.page--;
+			this.setStatus('');
+			this.showSearchError(providerId, error);
+			this.updateLoadMoreButton();
 		}
 	}
 
@@ -141,6 +185,8 @@ export class ImageSearchModal extends Modal {
 		const defaultMode = this.settings.defaultInsertMode;
 
 		for (const result of results) {
+			if (this.seenImageUrls.has(result.imageUrl)) continue;
+			this.seenImageUrls.add(result.imageUrl);
 			const item = grid.createDiv({ cls: 'search-insert-image-item' });
 
 			const thumbnail = item.createEl('button', {
@@ -163,6 +209,32 @@ export class ImageSearchModal extends Modal {
 				.createEl('button', { text: '⬇ Baixar', attr: { 'aria-label': 'Baixar e inserir' } })
 				.addEventListener('click', () => void this.insert(result, 'download', item));
 		}
+	}
+
+	private updateLoadMoreButton(): void {
+		if (!this.loadMoreButton) return;
+		this.loadMoreButton.toggle(this.hasMore);
+		this.loadMoreButton.removeAttribute('disabled');
+	}
+
+	private showSearchError(providerId: ImageProviderId, error: unknown): void {
+		const notice = new Notice(searchErrorMessage(providerId, error));
+		if (
+			providerId !== 'duckduckgo' ||
+			!(error instanceof ProviderRateLimitError) ||
+			!isGoogleConfigured(this.settings)
+		) {
+			return;
+		}
+		const retryButton = notice.noticeEl.createEl('button', {
+			text: 'Tentar com Google',
+			cls: 'search-insert-image-notice-button',
+		});
+		retryButton.addEventListener('click', () => {
+			notice.hide();
+			this.providerId = 'google';
+			void this.search();
+		});
 	}
 
 	private async insert(result: ImageResult, mode: InsertMode, item: HTMLElement): Promise<void> {

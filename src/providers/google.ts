@@ -5,6 +5,8 @@ import {
 	ProviderConfigError,
 	ProviderRateLimitError,
 	ProviderResponseError,
+	ImageSearchPage,
+	waitForProviderRequest,
 } from './types';
 
 const ENDPOINT = 'https://www.googleapis.com/customsearch/v1';
@@ -36,9 +38,9 @@ export class GoogleProvider implements ImageProvider {
 		private readonly safeSearch: boolean,
 	) {}
 
-	async search(query: string, page: number): Promise<ImageResult[]> {
+	async search(query: string, page: number): Promise<ImageSearchPage> {
 		const start = 1 + PAGE_SIZE * (Math.max(page, 1) - 1);
-		if (start > MAX_START) return [];
+		if (start > MAX_START) return { results: [], hasMore: false };
 
 		const params = new URLSearchParams({
 			key: this.apiKey,
@@ -49,6 +51,7 @@ export class GoogleProvider implements ImageProvider {
 			start: String(start),
 			safe: this.safeSearch ? 'active' : 'off',
 		});
+		await waitForProviderRequest();
 		const response = await requestUrl({ url: `${ENDPOINT}?${params.toString()}`, throw: false });
 
 		let data: GoogleResponse;
@@ -66,7 +69,8 @@ export class GoogleProvider implements ImageProvider {
 		if (response.status >= 400) throw new ProviderResponseError(`Google request failed: ${detail}`);
 
 		// Google omits `items` when there are no results.
-		return (data.items ?? []).flatMap((item) => this.toImageResult(item));
+		const results = (data.items ?? []).flatMap((item) => this.toImageResult(item));
+		return { results, hasMore: results.length === PAGE_SIZE && start < MAX_START };
 	}
 
 	private toImageResult(item: GoogleItem): ImageResult[] {

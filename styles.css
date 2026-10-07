@@ -1,7 +1,7 @@
-/* Minimal layout for the search modal; full styling comes in task 05. */
 .search-insert-image-search-bar {
 	display: flex;
 	gap: var(--size-4-2);
+	align-items: center;
 }
 
 .search-insert-image-input {
@@ -18,11 +18,32 @@
 	font-size: var(--font-ui-smaller);
 }
 
+.search-insert-image-status {
+	min-height: var(--line-height-tight);
+	margin-top: var(--size-4-2);
+	color: var(--text-muted);
+	text-align: center;
+}
+
 .search-insert-image-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 	gap: var(--size-4-2);
 	margin-top: var(--size-4-2);
+}
+
+.search-insert-image-item {
+	min-width: 0;
+	padding: var(--size-4-1);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.search-insert-image-item:hover {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
 }
 
 .search-insert-image-item.is-loading {
@@ -35,12 +56,21 @@
 	height: 120px;
 	padding: 0;
 	overflow: hidden;
+	border: 0;
+	border-radius: var(--radius-s);
+	background: var(--background-primary);
+	cursor: pointer;
 }
 
 .search-insert-image-thumbnail img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	transition: transform 120ms ease;
+}
+
+.search-insert-image-thumbnail:hover img {
+	transform: scale(1.04);
 }
 
 .search-insert-image-actions {
@@ -53,4 +83,19 @@
 	flex: 1;
 	padding: 0 var(--size-4-1);
 	font-size: var(--font-ui-smaller);
+}
+
+.search-insert-image-load-more {
+	display: block;
+	margin: var(--size-4-3) auto 0;
+}
+
+.search-insert-image-notice-button {
+	margin-top: var(--size-4-1);
+}
+
+@media (max-width: 480px) {
+	.search-insert-image-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
