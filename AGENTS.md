@@ -31,6 +31,7 @@
 - Commands live in their own module `src/commands.ts` (`registerCommands`, `openImageSearchModal`); `main.ts` only wires things up.
 - Settings default `imageWidth = 700`, applied to both `![alt|700](url)` and `![[file|700]]`.
 - Default insert mode comes from settings; Shift+click uses the other mode.
+- Internationalization (i18n): zero-dependency typed dictionary approach (`src/i18n/`) with English (`en`) as the base locale and Brazilian Portuguese (`pt-br`) supported. Active language detected via `window.localStorage.getItem('language')` (with fallback to `en`). All UI text, commands, notices, and settings use `t('key')`.
 
 ## Coding conventions
 
@@ -66,16 +67,17 @@
 
 ## Natural language
 
-- **English — anything intended for developers:**
+- **English — developer artifacts and base locale:**
     - Identifiers: variables, functions, classes, file names, command IDs, settings keys (e.g. `open-image-search`, `ImageSearchModal`, `defaultInsertMode`).
     - Code comments, `console.log`/`console.error` messages, TSDocs and internal exception messages.
     - Commit messages.
-    - Technical docs such as `AGENTS.md`.
+    - Technical docs such as `AGENTS.md` and `.agents/PLAN.md`.
+    - Base locale dictionary (`src/i18n/locales/en.ts`) for all UI copy (Obsidian community guideline requirement).
 
-- **Brazilian Portuguese (pt-BR) — anything intended for plugin users:**
-    - UI text: command names in the command palette (e.g. "Buscar e inserir imagem"), modal text, buttons, settings tab labels and descriptions.
-    - User notifications (`Notice`), e.g. "DuckDuckGo limitou as requisições…".
-    - The plugin `README.md`.
+- **Translations (i18n):**
+    - Supported locales: Brazilian Portuguese (`src/i18n/locales/pt-br.ts`).
+    - All UI copy (command palette names, modal controls, buttons, settings labels/descriptions, `Notice` alerts) must be referenced via `t(key)`.
+    - User documentation: `README.md` in pt-BR.
 
 - **Chat:** always reply to the user in Brazilian Portuguese.
 

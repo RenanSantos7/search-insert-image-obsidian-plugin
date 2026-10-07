@@ -1,6 +1,6 @@
 # Plan — Obsidian Plugin "Search Insert Image"
 
-> UI strings quoted in this plan (command names, buttons, `Notice` texts) are final user-facing text and stay in Brazilian Portuguese. Everything else is in English (see "Natural language" in `AGENTS.md`).
+> UI strings support internationalization (i18n) via `src/i18n/` with English (`en`) as the base locale and Brazilian Portuguese (`pt-BR`) as a supported locale. Detection uses Obsidian's configured language (`window.localStorage.getItem('language')`), falling back to English. Everything else is in English (see "Natural language" in `AGENTS.md`).
 
 ## Use case
 
@@ -17,6 +17,7 @@ Reference: https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin
 - **Insert mode:** the default comes from settings. In the modal, click uses the default and Shift+click uses the other mode; each thumbnail also has explicit buttons.
 - **Default image width:** `700`.
 - **Commands:** live in their own module (`src/commands.ts`).
+- **Internationalization (i18n):** zero-dependency typed dictionary module in `src/i18n/`. English is the base locale (`en.ts`); Brazilian Portuguese is supported (`pt-br.ts`). Detection follows Obsidian's locale setting.
 - **Project base:** clone the official [obsidianmd/obsidian-sample-plugin](https://github.com/obsidianmd/obsidian-sample-plugin) repository and build on it (TypeScript + esbuild + ESLint already configured). Do not hand-scaffold.
 
 ## Starting point: sample plugin
@@ -46,6 +47,11 @@ search-insert-image-obsidian-plugin/
     ├── settings.ts      # interface, DEFAULT_SETTINGS and PluginSettingTab
     ├── modal.ts         # ImageSearchModal: search field + grid + pagination
     ├── insert.ts        # insert as link / download and insert as wikilink
+    ├── i18n/            # internationalization
+    │   ├── index.ts     # t() helper, locale resolution (window.localStorage 'language')
+    │   └── locales/
+    │       ├── en.ts    # default locale (English)
+    │       └── pt-br.ts # Brazilian Portuguese locale
     └── providers/
         ├── types.ts     # ImageResult + ImageProvider interface
         ├── duckduckgo.ts
@@ -186,6 +192,15 @@ async onload() {
 - The ribbon icon only works when a `MarkdownView` is active; otherwise it shows a `Notice`.
 - All entry points reuse `openImageSearchModal()`.
 
+## Internationalization (`src/i18n/`)
+
+- Architecture: zero-dependency typed dictionary pattern.
+- Base locale: `src/i18n/locales/en.ts` contains all keys and English text (single source of truth for string keys).
+- Locales: `src/i18n/locales/pt-br.ts` implements `Partial<typeof en>` for Brazilian Portuguese.
+- Detection: `(window.localStorage.getItem('language') || 'en').toLowerCase()`.
+- Helper: `t(key: keyof typeof en, ...args)` looks up the active translation with fallback to English.
+- All user-facing strings (commands, ribbon icon tooltip, editor menu item, modal inputs/buttons/labels, settings tab, provider error messages, and notices) use `t()`.
+
 ## Steps
 
 1. Clone the sample plugin (see "Starting point"), remove the example code, adjust manifest/package.json, confirm that `pnpm dev`, `pnpm build`, `pnpm lint` and `node ./install.mjs` work. Then create `commands.ts` + an empty modal.
@@ -193,3 +208,4 @@ async onload() {
 3. Download + wikilink.
 4. Settings tab + Google Custom Search.
 5. Pagination, styles, error handling and rate limiting, testing on desktop and mobile.
+6. Internationalization (i18n): create `src/i18n/` with English base and Portuguese translation, replace hardcoded strings with `t()`, and verify locale switching.

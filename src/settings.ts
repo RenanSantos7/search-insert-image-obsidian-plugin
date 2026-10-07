@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: SearchInsertImageSettings = {
 	defaultInsertMode: 'link',
 	downloadFolder: '',
 	safeSearch: true,
-	imageWidth: 700,
+	imageWidth: 0,
 };
 
 export const PROVIDER_LABELS: Record<ImageProviderId, string> = {
