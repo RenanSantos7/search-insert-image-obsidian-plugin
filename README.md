@@ -6,9 +6,9 @@ Plugin para o [Obsidian](https://obsidian.md) que permite pesquisar imagens na i
 
 ## Funcionalidades previstas
 
-- Pesquisar imagens no DuckDuckGo (padrão, sem chave) ou no Google Custom Search (exige chave de API).
-- Inserir a imagem como link externo: `![texto alternativo|700](url_da_imagem)`.
-- Ou baixar a imagem para o cofre e inseri-la como wikilink: `![[imagem|700]]`.
+- [ ] Pesquisar imagens no DuckDuckGo (padrão, sem chave) ou no Google Custom Search (exige chave de API).
+- [ ] Inserir a imagem como link externo: `![texto alternativo|700](url_da_imagem)`.
+- [ ] Ou baixar a imagem para o cofre e inseri-la como wikilink: `![[imagem|700]]`.
 
 ## Como usar
 
