@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "Running unit tests before push..."
+pnpm test
+status=$?
+
+if [ "$status" -ne 0 ]; then
+	echo "Push blocked: unit tests failed."
+	exit "$status"
+fi
+
+echo "Unit tests passed. Continuing push."

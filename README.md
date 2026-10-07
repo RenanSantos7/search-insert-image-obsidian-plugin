@@ -45,6 +45,14 @@ pnpm build   # build de produção
 pnpm lint
 ```
 
+### Git hook
+
+O repositório inclui um hook `pre-push` que executa `pnpm test` e bloqueia o push quando algum teste falha. Para ativá-lo em um clone, execute:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Licença
 
 [0BSD](LICENSE)
