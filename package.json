@@ -1,6 +1,6 @@
 {
 	"name": "search-insert-image-obsidian-plugin",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Obsidian plugin to search for images on the web and insert them into the current note",
 	"main": "main.js",
 	"type": "module",
