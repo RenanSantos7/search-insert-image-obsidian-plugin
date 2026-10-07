@@ -1,61 +1,75 @@
 >[!Note]
->Este plugin foi desenvolvido com auxílio de IA.
+>This plugin was developed with AI assistance.
 
 # Search Insert Image
 
-Plugin para o [Obsidian](https://obsidian.md) que permite pesquisar imagens na internet e inseri-las na nota atual com um clique.
+*Read this in other languages: [English](README.md) | [Português](README.pt-br.md)*
 
-## Funcionalidades
+An [Obsidian](https://obsidian.md) plugin that lets you search for images on the web and insert them into the active note with a single click.
 
-- Pesquisar imagens no DuckDuckGo (padrão, sem chave) ou no Google.
-- Paginar os resultados com **Carregar mais**.
-- Inserir a imagem como link externo: `![texto alternativo|700](url_da_imagem)`.
-- Ou baixar a imagem para o cofre e inseri-la como wikilink: `![[imagem|700]]`.
-- Escolher o buscador, o modo de inserção, a largura, a pasta de download e a busca segura nas configurações.
+## Features
 
-## Como usar
+- Search images using DuckDuckGo (default, no API key needed) or Google Custom Search.
+- Paginate through results using **Load more**.
+- Insert images as external Markdown links: `![alt text|700](image_url)`.
+- Download images directly into the vault and insert them as wikilinks: `![[image|700]]`.
+- Customize default search provider, insert mode, image width, download folder, and safe search in settings.
+- Multi-language support (English, Brazilian Portuguese, and Spanish) that automatically adapts to Obsidian's interface language.
 
-Com uma nota Markdown aberta, abra a busca de imagens de uma destas formas:
+## How to use
 
-- Paleta de comandos (Ctrl/Cmd+P) → **Search Insert Image: Buscar e inserir imagem**;
-- Ícone **Buscar e inserir imagem** na barra lateral;
-- Clique com o botão direito no editor → **Buscar imagem…**.
+With a Markdown note open, open the image search modal in any of the following ways:
 
-Se houver texto selecionado na nota, ele é usado como termo de busca.
+- Command palette (`Ctrl`/`Cmd`+`P`) → **Search Insert Image: Search and insert image**;
+- Ribbon icon in the left sidebar (**Search and insert image**);
+- Right-click editor context menu → **Search image…**.
 
-## Configuração do Google
+If you have text selected in the note, it will automatically be used as the initial search query.
 
-O DuckDuckGo funciona sem configuração adicional. Para usar o Google, preencha a chave de API e o ID do mecanismo de busca nas configurações do plugin. A API do Google oferece uma cota gratuita limitada a 100 buscas por dia; cobranças e limites adicionais dependem da sua conta Google.
+Inside the search modal:
+- **Click** an image to insert using the default mode (link or download).
+- **Shift+click** an image to insert using the alternative mode.
+- Thumbnail buttons allow you to explicitly choose between `🔗 Link` and `⬇ Download`.
 
-## Serviços externos e privacidade
+## Google setup
 
-Ao pesquisar, os termos digitados são enviados ao buscador selecionado. O plugin usa o endpoint de imagens do DuckDuckGo por padrão, que é um endpoint não oficial e pode limitar requisições temporariamente. Quando configurado, o Google usa a API oficial de pesquisa personalizada. O plugin não coleta telemetria, não envia o conteúdo das notas e só faz download de uma imagem quando você escolhe inseri-la como arquivo no cofre.
+DuckDuckGo works out of the box without any extra configuration. To use Google, fill in your API key and Search Engine ID in the plugin settings. Google Custom Search provides a free tier of 100 queries per day; any additional usage depends on your Google Cloud account.
 
-## Instalação manual
+## External services and privacy
 
-1. Baixe `main.js`, `manifest.json` e `styles.css` da versão mais recente.
-2. Copie os arquivos para `<seu cofre>/.obsidian/plugins/search-insert-image/`.
-3. Recarregue o Obsidian e ative o plugin em **Configurações → Plugins da comunidade**.
+When searching, query terms are sent directly to the selected search provider. DuckDuckGo uses its public web endpoint by default, which may temporarily rate-limit high request volumes. When configured, Google uses the official Custom Search JSON API.
 
-## Desenvolvimento
+This plugin:
+- Collects no telemetry or user data.
+- Does not transmit note contents or vault files.
+- Only downloads images when you explicitly choose to download them into your vault.
 
-Requer Node.js 18 ou superior e [pnpm](https://pnpm.io).
+## Manual installation
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release.
+2. Copy the files into `<your-vault>/.obsidian/plugins/search-insert-image/`.
+3. Reload Obsidian and enable the plugin under **Settings → Community plugins**.
+
+## Development
+
+Requires Node.js 18 or higher and [pnpm](https://pnpm.io).
 
 ```bash
 pnpm install
-pnpm dev     # compila em modo watch
-pnpm build   # build de produção
-pnpm lint
+pnpm dev     # compile in watch mode
+pnpm build   # production build
+pnpm lint    # check code style and conventions
+pnpm test    # run unit tests
 ```
 
 ### Git hook
 
-O repositório inclui um hook `pre-push` que executa `pnpm test` e bloqueia o push quando algum teste falha. Para ativá-lo em um clone, execute:
+The repository includes a `pre-push` hook that runs `pnpm test` and prevents pushing when any test fails. To activate it in a local clone, run:
 
 ```bash
 git config core.hooksPath .githooks
 ```
 
-## Licença
+## License
 
 [0BSD](LICENSE)

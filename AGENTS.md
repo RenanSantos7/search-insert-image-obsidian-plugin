@@ -75,9 +75,9 @@
     - Base locale dictionary (`src/i18n/locales/en.ts`) for all UI copy (Obsidian community guideline requirement).
 
 - **Translations (i18n):**
-    - Supported locales: Brazilian Portuguese (`src/i18n/locales/pt-br.ts`).
+    - Supported locales: Brazilian Portuguese (`src/i18n/locales/pt-br.ts`) and Spanish (`src/i18n/locales/es.ts`).
     - All UI copy (command palette names, modal controls, buttons, settings labels/descriptions, `Notice` alerts) must be referenced via `t(key)`.
-    - User documentation: `README.md` in pt-BR.
+    - User documentation: `README.md` in English (base), with Brazilian Portuguese translation in `README.pt-br.md`.
 
 - **Chat:** always reply to the user in Brazilian Portuguese.
 
