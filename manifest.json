@@ -2,7 +2,7 @@
 	"id": "search-insert-image",
 	"name": "Search Insert Image",
 	"version": "1.0.0",
-	"minAppVersion": "1.0.0",
+	"minAppVersion": "1.5.7",
 	"description": "Search for images on the web (DuckDuckGo or Google) and insert them into the current note as a link or as a downloaded attachment.",
 	"author": "RenanSantos7",
 	"isDesktopOnly": false
