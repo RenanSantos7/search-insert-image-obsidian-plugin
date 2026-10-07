@@ -4,7 +4,7 @@ Derived from the "Steps" in `.agents/PLAN.md`. The plan is the source of truth f
 
 | # | Task | Depends on | Status |
 |---|---|---|---|
-| 01 | [Scaffold from sample plugin](01-scaffold.md) | — | todo |
+| 01 | [Scaffold from sample plugin](01-scaffold.md) | — | done |
 | 02 | [DuckDuckGo search + insert as link](02-duckduckgo-link.md) | 01 | todo |
 | 03 | [Download + wikilink](03-download-wikilink.md) | 02 | todo |
 | 04 | [Settings tab + Google Custom Search](04-settings-google.md) | 02 | todo |
