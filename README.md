@@ -1,3 +1,6 @@
+>[!Note]
+>Este plugin foi desenvolvido com auxílio de IA.
+
 # Search Insert Image
 
 Plugin para o [Obsidian](https://obsidian.md) que permite pesquisar imagens na internet e inseri-las na nota atual com um clique.
