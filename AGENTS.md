@@ -50,6 +50,7 @@
     - `fix: :adhesive_bandage: correct endnote backlink URL in HtmlTree`
     - `refactor: :recycle: extract bibliography formatting to model method`
     - `docs: :memo: update AGENTS.md guide`
+- **Commit the code** after each task are concluded.
 
 ## Natural language
 
