@@ -1,6 +1,15 @@
 /* Minimal layout for the search modal; full styling comes in task 05. */
+.search-insert-image-search-bar {
+	display: flex;
+	gap: var(--size-4-2);
+}
+
 .search-insert-image-input {
-	width: 100%;
+	flex: 1;
+}
+
+.search-insert-image-invalid {
+	border-color: var(--text-error);
 }
 
 .search-insert-image-hint {

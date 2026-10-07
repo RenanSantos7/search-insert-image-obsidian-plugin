@@ -39,6 +39,8 @@ interface QueryState {
 export class DuckDuckGoProvider implements ImageProvider {
 	private readonly queries = new Map<string, QueryState>();
 
+	constructor(private readonly safeSearch: boolean) {}
+
 	async search(query: string, page: number): Promise<ImageResult[]> {
 		const state = await this.getQueryState(query);
 
@@ -50,8 +52,7 @@ export class DuckDuckGoProvider implements ImageProvider {
 				q: query,
 				vqd: state.vqd,
 				f: ',,,,',
-				// Safe search on; becomes configurable in task 04.
-				p: '1',
+				p: this.safeSearch ? '1' : '-1',
 			});
 			url = `${BASE_URL}i.js?${params.toString()}`;
 		} else {

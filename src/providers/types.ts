@@ -23,6 +23,14 @@ export class ProviderRateLimitError extends Error {
 	}
 }
 
+/** The provider rejected the credentials or configuration (e.g. invalid API key). */
+export class ProviderConfigError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'ProviderConfigError';
+	}
+}
+
 /** The provider answered with something we can't parse (e.g. the endpoint changed). */
 export class ProviderResponseError extends Error {
 	constructor(message: string) {

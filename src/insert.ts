@@ -1,12 +1,12 @@
-import { App, Editor, moment, Notice, requestUrl, TFile } from 'obsidian';
+import { App, Editor, moment, normalizePath, Notice, requestUrl, TFile, TFolder } from 'obsidian';
 import type { ImageResult } from './providers/types';
 
-export type InsertMode = 'link' | 'download';
-
-/** Hardcoded until task 04 moves it to the settings. */
-export const DEFAULT_IMAGE_WIDTH = 700;
-/** Hardcoded until task 04 moves it to the settings. */
-export const DEFAULT_INSERT_MODE: InsertMode = 'link';
+export interface DownloadOptions {
+	/** 0 = no width suffix. */
+	width: number;
+	/** Empty = use Obsidian's attachment folder settings. */
+	downloadFolder: string;
+}
 
 const MIME_EXTENSIONS: Record<string, string> = {
 	'image/png': 'png',
@@ -37,7 +37,7 @@ function escapeUrl(url: string): string {
 }
 
 /** Inserts the image as an external Markdown link, replacing the selection. */
-export function insertAsLink(editor: Editor, result: ImageResult, width = DEFAULT_IMAGE_WIDTH): void {
+export function insertAsLink(editor: Editor, result: ImageResult, width: number): void {
 	const alt = sanitizeAlt(result.title);
 	editor.replaceSelection(`![${alt}${widthSuffix(width)}](${escapeUrl(result.imageUrl)})`);
 }
@@ -51,7 +51,7 @@ export async function insertAsDownload(
 	editor: Editor,
 	sourcePath: string,
 	result: ImageResult,
-	width = DEFAULT_IMAGE_WIDTH,
+	options: DownloadOptions,
 ): Promise<boolean> {
 	let data: ArrayBuffer;
 	let extension: string | null;
@@ -76,8 +76,7 @@ export async function insertAsDownload(
 	let file: TFile;
 	try {
 		const fileName = `${slugify(result.title)}-${moment().format('YYYYMMDD-HHmmss')}.${extension}`;
-		// Respects the user's attachment folder and adds a suffix if the name is taken.
-		const path = await app.fileManager.getAvailablePathForAttachment(fileName, sourcePath);
+		const path = await getDownloadPath(app, fileName, sourcePath, options.downloadFolder);
 		file = await app.vault.createBinary(path, data);
 	} catch (error) {
 		console.error('Search Insert Image: saving the image failed', error);
@@ -87,8 +86,46 @@ export async function insertAsDownload(
 
 	const isAmbiguous = app.vault.getFiles().some((f) => f !== file && f.name === file.name);
 	const target = isAmbiguous ? file.path : file.name;
-	editor.replaceSelection(`![[${target}${widthSuffix(width)}]]`);
+	editor.replaceSelection(`![[${target}${widthSuffix(options.width)}]]`);
 	return true;
+}
+
+/** Returns a free path for the new file, never overwriting an existing one. */
+async function getDownloadPath(
+	app: App,
+	fileName: string,
+	sourcePath: string,
+	downloadFolder: string,
+): Promise<string> {
+	const folder = normalizePath(downloadFolder.trim());
+	if (downloadFolder.trim() === '' || folder === '/') {
+		// Respects the user's attachment folder and adds a suffix if the name is taken.
+		return app.fileManager.getAvailablePathForAttachment(fileName, sourcePath);
+	}
+
+	await ensureFolder(app, folder);
+	const dot = fileName.lastIndexOf('.');
+	const base = fileName.slice(0, dot);
+	const extension = fileName.slice(dot + 1);
+	let path = normalizePath(`${folder}/${fileName}`);
+	for (let i = 1; app.vault.getAbstractFileByPath(path); i++) {
+		path = normalizePath(`${folder}/${base} ${i}.${extension}`);
+	}
+	return path;
+}
+
+/** Creates the folder and any missing parent folders. */
+async function ensureFolder(app: App, folder: string): Promise<void> {
+	let current = '';
+	for (const part of folder.split('/')) {
+		current = current ? `${current}/${part}` : part;
+		const existing = app.vault.getAbstractFileByPath(current);
+		if (!existing) {
+			await app.vault.createFolder(current);
+		} else if (!(existing instanceof TFolder)) {
+			throw new Error(`Download folder path "${current}" is a file`);
+		}
+	}
 }
 
 function getHeader(headers: Record<string, string>, name: string): string {
