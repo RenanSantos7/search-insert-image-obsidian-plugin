@@ -29,26 +29,40 @@ jobs:
               run: |
                   pnpm install --frozen-lockfile
                   pnpm build
+                  pnpm test
+                  pnpm lint
 
-            - name: Check for optional styles
-              id: styles
+            - name: Validate release version and artifacts
+              env:
+                  TAG_NAME: ${{ github.ref_name }}
               run: |
-                  [ -f styles.css ] && echo "exists=true" >> "$GITHUB_OUTPUT" || echo "exists=false" >> "$GITHUB_OUTPUT"
+                  manifest_version="$(node -p "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')).version")"
+                  if [ "$TAG_NAME" != "$manifest_version" ]; then
+                    echo "Tag $TAG_NAME does not match manifest version $manifest_version."
+                    exit 1
+                  fi
+
+                  test -s main.js
+                  test -s manifest.json
 
             - name: Attest build provenance
               uses: actions/attest@v4
               with:
                   subject-path: |
                       main.js
-                      ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }}
+                      manifest.json
 
             - name: Create release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG_NAME: ${{ github.ref_name }}
               run: |
-                  tag="${GITHUB_REF#refs/tags/}"
+                  assets=(main.js manifest.json)
+                  if [ -f styles.css ]; then
+                    assets+=(styles.css)
+                  fi
 
-                  gh release create "$tag" \
-                    --title="$tag" \
+                  gh release create "$TAG_NAME" \
+                    --title="$TAG_NAME" \
                     --draft \
-                    main.js manifest.json ${{ steps.styles.outputs.exists == 'true' && 'styles.css' || '' }}
+                    "${assets[@]}"
