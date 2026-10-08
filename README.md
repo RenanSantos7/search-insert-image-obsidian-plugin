@@ -33,7 +33,7 @@ Ao pesquisar, os termos digitados são enviados ao buscador selecionado. O plugi
 
 ## Instalação manual
 
-1. Baixe `main.js`, `manifest.json` e `styles.css` da versão mais recente.
+1. Baixe `main.js`, `manifest.json` e `styles.css` da [versão mais recente](https://github.com/RenanSantos7/search-insert-image-obsidian-plugin/releases).
 2. Copie os arquivos para `<seu cofre>/.obsidian/plugins/search-insert-image/`.
 3. Recarregue o Obsidian e ative o plugin em **Configurações → Plugins da comunidade**.
 
@@ -42,7 +42,6 @@ Ao pesquisar, os termos digitados são enviados ao buscador selecionado. O plugi
 Requer Node.js 18 ou superior e [pnpm](https://pnpm.io).
 
 ```bash
-pnpm install
 pnpm dev     # compila em modo watch
 pnpm build   # build de produção
 pnpm lint
