@@ -46,20 +46,18 @@ This plugin:
 
 ## Manual installation
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release.
-2. Copy the files into `<your-vault>/.obsidian/plugins/search-insert-image/`.
-3. Reload Obsidian and enable the plugin under **Settings → Community plugins**.
+1. Baixe `main.js`, `manifest.json` e `styles.css` da [versão mais recente](https://github.com/RenanSantos7/search-insert-image-obsidian-plugin/releases).
+2. Copie os arquivos para `<seu cofre>/.obsidian/plugins/search-insert-image/`.
+3. Recarregue o Obsidian e ative o plugin em **Configurações → Plugins da comunidade**.
 
 ## Development
 
 Requires Node.js 18 or higher and [pnpm](https://pnpm.io).
 
 ```bash
-pnpm install
-pnpm dev     # compile in watch mode
-pnpm build   # production build
-pnpm lint    # check code style and conventions
-pnpm test    # run unit tests
+pnpm dev     # compila em modo watch
+pnpm build   # build de produção
+pnpm lint
 ```
 
 ### Git hook
